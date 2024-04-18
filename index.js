@@ -53,6 +53,7 @@ const con = mysql.createConnection({
     
 //   });
 
+
 app.get('/fetch/:id', (req, res) => {
     const id = req.params.id;
 
@@ -63,6 +64,22 @@ app.get('/fetch/:id', (req, res) => {
             res.send(result);
         }
     });
+});
+
+app.get('/fetch', (req, res) => {  
+  con.query("SELECT * FROM auto", (err, result, fields) => {
+      if(err){
+          console.log(err);
+          res.status(500).send('Hiba történt az adatok lekérdezésekor.');
+      } else {
+          let tableHTML = '<table border="1"><tr><th>ID</th><th>Szín</th><th>Márka</th></tr>';
+          result.forEach(row => {
+              tableHTML += `<tr><td>${row.id}</td><td>${row.szin}</td><td>${row.marka}</td></tr>`;
+          });
+          tableHTML += '</table>';
+          res.send(tableHTML);
+      }
+  });
 });
 
 
