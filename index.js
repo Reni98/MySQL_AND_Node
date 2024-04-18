@@ -6,6 +6,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set('views engine', 'ejs'); // EJS beállítása
+
+
 const con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -40,21 +43,33 @@ app.post('/post', (req, res) => {
     });
 });
 
+// app.get('/fetch', (req, res) => {
+//     con.query("SELECT * FROM auto", (err, result, fields) => {
+//         if (err) {
+//             console.log(err);
+//             res.status(500).send('Hiba történt az adatok lekérdezésekor.');
+//         } else {
+//             let tableHTML = '<table class="table"><thead><tr><th>ID</th><th>Szín</th><th>Márka</th></tr></thead><tbody>';
+//             result.forEach(row => {
+//                 tableHTML += `<tr><td>${row.id}</td><td>${row.szin}</td><td>${row.marka}</td></tr>`;
+//             });
+//             tableHTML += '</tbody></table>';
+//             res.send(tableHTML);
+//         }
+//     });
+// });
+
 app.get('/fetch', (req, res) => {
     con.query("SELECT * FROM auto", (err, result, fields) => {
         if (err) {
             console.log(err);
             res.status(500).send('Hiba történt az adatok lekérdezésekor.');
         } else {
-            let tableHTML = '<table border="1"><tr><th>ID</th><th>Szín</th><th>Márka</th></tr>';
-            result.forEach(row => {
-                tableHTML += `<tr><td>${row.id}</td><td>${row.szin}</td><td>${row.marka}</td></tr>`;
-            });
-            tableHTML += '</table>';
-            res.send(tableHTML);
+            res.render('table', { autok: result }); // Táblázat megjelenítése az EJS fájlon keresztül
         }
     });
 });
+
 
 app.listen(5000, (err) => {
     if (err) {
